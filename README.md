@@ -11,7 +11,8 @@ This resource was designed in [OX Lib](https://github.com/overextended/ox_lib) a
 The script is open source, so if you wanted to make the script more advanced, you could definitely do that. However, I will only provide support if the script is not working and you have met the requirements. My links are provided below for script previews, downloads and support/contacting me. 
 
 * [Script Preview](https://youtu.be/Y74ZE5pGtFI)
-* [Download Link](
+* Forum Link - Currently Pending
+* [My Development Discord](https://discord.gg/alv)
 
 |                                         |                                |
 |-------------------------------------|----------------------------|
@@ -20,5 +21,3 @@ The script is open source, so if you wanted to make the script more advanced, yo
 | Lines (approximately)  | 114 lines as provided  |
 | Requirements                | OX_Lib & (Optional) ESX Legacy      |
 | Support                           |   Yes, response time unknown               |
-
-(For releases without code the not applicable fields can be written as N/A)
