@@ -1,5 +1,11 @@
-Config = {
+TeleportConfig = {
     TeleporterZones = {
+        ["Pillbox Elevator"] = {
+            EnterMarker = vector3(332.1434, -595.6525, 43.2841),
+            EnterLanding = vector3(342.1964, -585.6117, 28.7992),
+            ExitMarker = vector3(342.1964, -585.6117, 28.7992),
+            ExitLanding = vector3(329.2330, -594.6801, 43.2841)
+        },
         ["Cocaine Lab"] = {
             EnterMarker = vector3(988.77, -434.63, 63.74),
             EnterLanding = vector3(1088.636, -3188.551, -37.993),
@@ -43,6 +49,11 @@ Config = {
         FaceCamera = true,
         Rotate = false
     },
+    FadeInOut = {
+        Enabled = true, -- When you teleport should the screen fade out, set the coords then fade back in
+        Speed = 500, -- How fast the screen fades in/out in ms
+        FadedTime = 2000 -- The amount of time the user will be in the black screen for
+    },
     Language = {
         EnterMarker = 'Press  ~INPUT_CONTEXT~ to enter the %s', -- For Floating Text
         ExitMarker = 'Press  ~INPUT_CONTEXT~ to exit the %s', -- For Floating Text
@@ -51,41 +62,41 @@ Config = {
     Distance = 2.0 -- Distance required to use marker
 }
 
-for k, v in pairs(Config.TeleporterZones) do
+for k, v in pairs(TeleportConfig.TeleporterZones) do
     local Entering = lib.points.new({
         coords = v.EnterMarker, 
-        distance = Config.Distance
+        distance = TeleportConfig.Distance
     })
 
     local Exiting = lib.points.new({
         coords = v.ExitMarker,
-        distance = Config.Distance
+        distance = TeleportConfig.Distance
     })
 
-    if Config.EnableMarker or Config.EnableFloatingText then
+    if TeleportConfig.EnableMarker or TeleportConfig.EnableFloatingText then
         function Entering:nearby()
-            if Config.Marker then
-                DrawMarker(Config.Marker.Type, v.EnterMarker, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Config.Marker.Scale.X, Config.Marker.Scale.Y, Config.Marker.Scale.Z, Config.Marker.Color.R, Config.Marker.Color.G, Config.Marker.Color.B, Config.Marker.Color.A, Config.Marker.BobUpAndDown, Config.Marker.FaceCamera, 2, Config.Marker.Rotate)
+            if TeleportConfig.Marker then
+                DrawMarker(TeleportConfig.Marker.Type, v.EnterMarker, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, TeleportConfig.Marker.Scale.X, TeleportConfig.Marker.Scale.Y, TeleportConfig.Marker.Scale.Z, TeleportConfig.Marker.Color.R, TeleportConfig.Marker.Color.G, TeleportConfig.Marker.Color.B, TeleportConfig.Marker.Color.A, TeleportConfig.Marker.BobUpAndDown, TeleportConfig.Marker.FaceCamera, 2, TeleportConfig.Marker.Rotate)
             end
 
-            if Config.EnableFloatingText then
-                ESX.ShowFloatingHelpNotification(Config.Language.EnterMarker:format(k), v.EnterMarker)
+            if TeleportConfig.EnableFloatingText then
+                ESX.ShowFloatingHelpNotification(TeleportConfig.Language.EnterMarker:format(k), v.EnterMarker)
             end
         end
 
         function Exiting:nearby()
-            if Config.Marker then
-                DrawMarker(Config.Marker.Type, v.ExitMarker, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Config.Marker.Scale.X, Config.Marker.Scale.Y, Config.Marker.Scale.Z, Config.Marker.Color.R, Config.Marker.Color.G, Config.Marker.Color.B, Config.Marker.Color.A, Config.Marker.BobUpAndDown, Config.Marker.FaceCamera, 2, Config.Marker.Rotate)
+            if TeleportConfig.Marker then
+                DrawMarker(TeleportConfig.Marker.Type, v.ExitMarker, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, TeleportConfig.Marker.Scale.X, TeleportConfig.Marker.Scale.Y, TeleportConfig.Marker.Scale.Z, TeleportConfig.Marker.Color.R, TeleportConfig.Marker.Color.G, TeleportConfig.Marker.Color.B, TeleportConfig.Marker.Color.A, TeleportConfig.Marker.BobUpAndDown, TeleportConfig.Marker.FaceCamera, 2, TeleportConfig.Marker.Rotate)
             end
 
-            if Config.EnableFloatingText then
-                ESX.ShowFloatingHelpNotification(Config.Language.ExitMarker:format(k), v.ExitMarker)
+            if TeleportConfig.EnableFloatingText then
+                ESX.ShowFloatingHelpNotification(TeleportConfig.Language.ExitMarker:format(k), v.ExitMarker)
             end
         end
     end
 
 
-    if Config.EnterTeleport then
+    if TeleportConfig.EnterTeleport then
         function Entering:onEnter()
             SetEntityCoords(cache.ped, v.EnterLanding)
         end
@@ -96,18 +107,32 @@ for k, v in pairs(Config.TeleporterZones) do
     end
 end
 
-if Config.EnableCommand then
-    RegisterCommand(Config.CommandName, function()
-        for k, v in pairs(Config.TeleporterZones) do
-            if GetDistanceBetweenCoords(cache.coords, v.EnterMarker) < Config.Distance then
+if TeleportConfig.EnableCommand then
+    RegisterCommand(TeleportConfig.CommandName, function()
+        for k, v in pairs(TeleportConfig.TeleporterZones) do
+            if GetDistanceBetweenCoords(cache.coords, v.EnterMarker) < TeleportConfig.Distance then
+                if TeleportConfig.FadeInOut.Enabled then
+                    DoScreenFadeOut(TeleportConfig.FadeInOut.Speed)
+                end
+                Wait(TeleportConfig.FadeInOut.FadedTime)
                 SetEntityCoords(cache.ped, v.EnterLanding)
-            elseif GetDistanceBetweenCoords(cache.coords, v.ExitMarker) < Config.Distance then
+                if TeleportConfig.FadeInOut.Enabled then
+                    DoScreenFadeIn(TeleportConfig.FadeInOut.Speed)
+                end
+            elseif GetDistanceBetweenCoords(cache.coords, v.ExitMarker) < TeleportConfig.Distance then
+                if TeleportConfig.FadeInOut.Enabled then
+                    DoScreenFadeOut(TeleportConfig.FadeInOut.Speed)
+                end
+                Wait(TeleportConfig.FadeInOut.FadedTime)
                 SetEntityCoords(cache.ped, v.ExitLanding)
+                if TeleportConfig.FadeInOut.Enabled then
+                    DoScreenFadeIn(TeleportConfig.FadeInOut.Speed)
+                end
             end
         end
     end)
 
-    if Config.EnableKeybind then
-        RegisterKeyMapping(Config.CommandName, Config.Language.KeybindDescription, 'keyboard', Config.Keybind)
+    if TeleportConfig.EnableKeybind then
+        RegisterKeyMapping(TeleportConfig.CommandName, TeleportConfig.Language.KeybindDescription, 'keyboard', TeleportConfig.Keybind)
     end
 end
